@@ -1,8 +1,10 @@
-from typing import Union
+from typing import Any, Union
+
+from typing_extensions import Self
 
 from odetam.exceptions import DetaError
 from odetam.model import BaseDetaModel, DetaModelMetaClass, handle_db_property
-from odetam.query import DetaQueryList, DetaQueryStatement, DetaQuery
+from odetam.query import DetaQuery, DetaQueryList, DetaQueryStatement
 
 try:
     # noinspection PyPackageRequirements
@@ -26,7 +28,7 @@ class AsyncDetaModel(BaseDetaModel, metaclass=AsyncDetaModelMetaClass):
         self.key = self.key or None
 
     @classmethod
-    async def get(cls, key):
+    async def get(cls, key: str) -> Self:
         """
         Get a single instance
         :param key: Deta database key
@@ -38,9 +40,9 @@ class AsyncDetaModel(BaseDetaModel, metaclass=AsyncDetaModelMetaClass):
         return cls._return_item_or_raise(item)
 
     @classmethod
-    async def get_all(cls):
+    async def get_all(cls) -> list[Self]:
         """Get all the records from the database"""
-        response: FetchResponse = await cls.__db__.fetch() 
+        response: FetchResponse = await cls.__db__.fetch()
         records = response.items
         while response.last:
             response = await cls.__db__.fetch(last=response.last)
@@ -51,23 +53,23 @@ class AsyncDetaModel(BaseDetaModel, metaclass=AsyncDetaModelMetaClass):
     @classmethod
     async def query(
         cls, query_statement: Union[DetaQuery, DetaQueryStatement, DetaQueryList]
-    ):
+    ) -> list[Self]:
         """Get items from database based on the query."""
-        response: FetchResponse = await cls.__db__.fetch(query_statement.as_query()) 
+        response: FetchResponse = await cls.__db__.fetch(query_statement.as_query())
         records = response.items
         while response.last:
             response = await cls.__db__.fetch(query_statement.as_query(), last=response.last)
             records += response.items
-            
+
         return [cls._deserialize(item) for item in records]
 
     @classmethod
-    async def delete_key(cls, key):
+    async def delete_key(cls, key: str):
         """Delete an item based on the key"""
         await cls.__db__.delete(key)
 
     @classmethod
-    async def put_many(cls, items):
+    async def put_many(cls, items: list[Self]) -> list[Self]:
         """Put multiple instances at once
 
         :param items: List of pydantic objects to put in the database
@@ -91,7 +93,7 @@ class AsyncDetaModel(BaseDetaModel, metaclass=AsyncDetaModelMetaClass):
         return [cls._deserialize(rec) for rec in processed]
 
     @classmethod
-    async def _db_put(cls, data):
+    async def _db_put(cls, data: dict[str, Any]):
         return await cls.__db__.put(data)
 
     async def save(self):
