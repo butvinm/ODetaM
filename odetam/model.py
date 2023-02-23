@@ -140,6 +140,13 @@ class DetaModel(BaseDetaModel, metaclass=DetaModelMetaClass):
         return cls._return_item_or_raise(item)
 
     @classmethod
+    def get_or_none(cls, key: str) -> Optional[Self]:
+        try:
+            return cls.get(key)
+        except ItemNotFound:
+            return None
+        
+    @classmethod
     def get_all(cls) -> list[Self]:
         """Get all the records from the database"""
         response: FetchResponse = cls.__db__.fetch()
