@@ -14,7 +14,7 @@ from odetam.field import DetaField
 from odetam.query import DetaQuery, DetaQueryStatement, DetaQueryList
 
 
-DETA_BASIC_TYPES = [dict[str, Any], list[Any], str, int, float, bool]
+DETA_BASIC_TYPES = [dict[str, Any], List[Any], str, int, float, bool]
 DETA_OPTIONAL_TYPES = [Optional[type_] for type_ in DETA_BASIC_TYPES]
 DETA_BASIC_LIST_TYPES = [
     List[type_] for type_ in DETA_BASIC_TYPES + DETA_OPTIONAL_TYPES
@@ -57,7 +57,7 @@ class BaseDetaModel(BaseModel):
         None, title="Key", description="Primary key in the database"
     )
 
-    def _serialize(self, exclude: Optional[list[str]] = None) -> dict[str, Any]:
+    def _serialize(self, exclude: Optional[List[str]] = None) -> dict[str, Any]:
         if not exclude:
             exclude = []
         as_dict = {}
@@ -147,7 +147,7 @@ class DetaModel(BaseDetaModel, metaclass=DetaModelMetaClass):
             return None
         
     @classmethod
-    def get_all(cls) -> list[Self]:
+    def get_all(cls) -> List[Self]:
         """Get all the records from the database"""
         response: FetchResponse = cls.__db__.fetch()
         records = response.items
@@ -160,7 +160,7 @@ class DetaModel(BaseDetaModel, metaclass=DetaModelMetaClass):
     @classmethod
     def query(
         cls, query_statement: Union[DetaQuery, DetaQueryStatement, DetaQueryList]
-    ) -> list[Self]:
+    ) -> List[Self]:
         """Get items from database based on the query."""
         response: FetchResponse = cls.__db__.fetch(query_statement.as_query())
         records = response.items
@@ -176,7 +176,7 @@ class DetaModel(BaseDetaModel, metaclass=DetaModelMetaClass):
         cls.__db__.delete(key)
 
     @classmethod
-    def put_many(cls, items: list[Self]) -> list[Self]:
+    def put_many(cls, items: List[Self]) -> List[Self]:
         """Put multiple instances at once
 
         :param items: List of pydantic objects to put in the database

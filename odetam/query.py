@@ -36,7 +36,7 @@ class DetaQueryList:
             self.conditions.append(other)
         return self
 
-    def as_query(self) -> List[Union[dict[str, Any], list[Any]]]:
+    def as_query(self) -> List[Union[dict[str, Any], List[Any]]]:
         return [query.as_query() for query in self.conditions]
 
 

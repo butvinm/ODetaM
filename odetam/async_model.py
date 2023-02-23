@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, List
 
 from typing_extensions import Self
 
@@ -47,7 +47,7 @@ class AsyncDetaModel(BaseDetaModel, metaclass=AsyncDetaModelMetaClass):
             return None
         
     @classmethod
-    async def get_all(cls) -> list[Self]:
+    async def get_all(cls) -> List[Self]:
         """Get all the records from the database"""
         response: FetchResponse = await cls.__db__.fetch()
         records = response.items
@@ -60,7 +60,7 @@ class AsyncDetaModel(BaseDetaModel, metaclass=AsyncDetaModelMetaClass):
     @classmethod
     async def query(
         cls, query_statement: Union[DetaQuery, DetaQueryStatement, DetaQueryList]
-    ) -> list[Self]:
+    ) -> List[Self]:
         """Get items from database based on the query."""
         response: FetchResponse = await cls.__db__.fetch(query_statement.as_query())
         records = response.items
@@ -76,7 +76,7 @@ class AsyncDetaModel(BaseDetaModel, metaclass=AsyncDetaModelMetaClass):
         await cls.__db__.delete(key)
 
     @classmethod
-    async def put_many(cls, items: list[Self]) -> list[Self]:
+    async def put_many(cls, items: List[Self]) -> List[Self]:
         """Put multiple instances at once
 
         :param items: List of pydantic objects to put in the database
